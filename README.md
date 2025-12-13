@@ -1,29 +1,23 @@
-# Aplikasi Inventory Gudang - Laravel
+# Warehouse Inventory Application – Laravel
 
-Sebuah aplikasi web yang dibangun dengan framework Laravel untuk mengelola data stok barang secara real-time. Proyek ini dibuat untuk Studi Kasus Pembelajaran.
+A web application built with the Laravel framework to manage warehouse stock data in real time. This project was created as a learning case study.
 
-## 🚀 Teknologi yang Digunakan
+## 🚀 Technologies Used
+
 -   **PHP**
 -   **Laravel**
 -   **MySQL**
--   **CSS (Boostrap + Tailwind)**
+-   **CSS (Bootstrap + Tailwind)**
 -   **JavaScript**
 
-## ⚙️ Cara Instalasi & Setup Lokal
-1.  Clone repository ini: `git clone https://github.com/BernardusBima/inventory-laravel.git`
-2.  Masuk ke direktori: `cd inventory-laravel`
-3.  Install dependensi Composer: `composer install`
-4.  Salin file `.env.example` menjadi `.env`: `cp .env.example .env`
-5.  Generate kunci aplikasi: `php artisan key:generate`
-6.  Konfigurasi koneksi database di file `.env` Anda.
-7.  Jalankan migrasi untuk membuat tabel: `php artisan migrate`
-8.  (Opsional) Jalankan seeder untuk data awal: `php artisan db:seed`
-9.  Jalankan server development: `php artisan serve` dan `npm run dev`
+## ⚙️ Local Installation & Setup
 
-## 🖼️ Tampilan Aplikasi
-
-*Tampilan Login Page*
-![Screenshot Halaman Login](https://raw.githubusercontent.com/BernardusBima/inventory-laravel/main/images/Project-Inventory-1.png)
-
-*Tampilan Dashboard*
-![Screenshot Dashboard](https://raw.githubusercontent.com/BernardusBima/inventory-laravel/main/images/Project-Inventory-2.png)
+1. Clone this repository: `git clone https://github.com/brilliahib/cms-stok-barang.git`
+2. Navigate to the project directory: `cd cms-stok-barang`
+3. Install Composer dependencies: `composer install` and `npm install`
+4. Copy `.env.example` to `.env`: `cp .env.example .env`
+5. Generate the application key: `php artisan key:generate`
+6. Configure your database connection in the `.env` file.
+7. Run migrations to create tables: `php artisan migrate`
+8. (Optional) Run seeders for initial data: `php artisan db:seed`
+9. Start the development server: `php artisan serve` and `npm run dev`
