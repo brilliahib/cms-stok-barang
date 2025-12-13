@@ -1,4 +1,4 @@
-# Warehouse Inventory Application – Laravel
+# SHR Jaya Motor Inventory
 
 A web application built with the Laravel framework to manage warehouse stock data in real time. This project was created as a learning case study.
 
