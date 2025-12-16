@@ -15,7 +15,6 @@
             </a>
         </li>
 
-        @if(auth()->user()->role == 'admin')
         <li class="nav-item">
             <a href="{{ route('barang.masuk') }}" class="nav-link text-white {{ request()->routeIs('barang.masuk') ? 'active' : '' }}">
                 <i class="bi bi-arrow-down-square-fill me-2"></i> Barang Masuk
@@ -28,6 +27,7 @@
             </a>
         </li>
 
+        @if(auth()->user()->role == 'admin')
         <li class="nav-item">
             <a href="{{ route('kategori.index') }}" class="nav-link text-white {{ request()->routeIs('kategori.index') ? 'active' : '' }}">
                 <i class="bi bi-tags-fill me-2"></i> Kategori
@@ -39,14 +39,15 @@
                 <i class="bi bi-truck me-2"></i> Supplier
             </a>
         </li>
+        @endif
 
         <li class="nav-item">
             <a href="{{ route('laporan.index') }}" class="nav-link text-white {{ request()->routeIs('laporan.index') ? 'active' : '' }}">
-                <i class="bi bi-file-earmark-bar-graph-fill me-2"></i> Laporan
+                <i class="bi bi-file-earmark-text-fill me-2"></i> Laporan
             </a>
         </li>
-        @endif
     </ul>
+
     <hr>
     <div class="dropdown">
         <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">

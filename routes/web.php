@@ -26,16 +26,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/barang/{barang}/edit', [BarangController::class, 'edit'])->name('barang.edit');
         Route::put('/barang/{barang}', [BarangController::class, 'update'])->name('barang.update');
         Route::delete('/barang/{barang}', [BarangController::class, 'destroy'])->name('barang.destroy');
-        Route::get('/barang/masuk', [PergerakanBarangController::class, 'createMasuk'])->name('barang.masuk');
-        Route::post('/barang/masuk', [PergerakanBarangController::class, 'storeMasuk'])->name('barang.storeMasuk');
-        Route::get('/barang/keluar', [PergerakanBarangController::class, 'createKeluar'])->name('barang.keluar');
-        Route::post('/barang/keluar', [PergerakanBarangController::class, 'storeKeluar'])->name('barang.storeKeluar');
         Route::resource('kategori', KategoriController::class)->except(['show']);
         Route::resource('supplier', SupplierController::class)->except(['show']);
-        Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
-        Route::get('/laporan/export', [LaporanController::class, 'exportPDF'])->name('laporan.export');
     });
 
+    Route::get('/barang/masuk', [PergerakanBarangController::class, 'createMasuk'])->name('barang.masuk');
+    Route::post('/barang/masuk', [PergerakanBarangController::class, 'storeMasuk'])->name('barang.storeMasuk');
+    Route::get('/barang/keluar', [PergerakanBarangController::class, 'createKeluar'])->name('barang.keluar');
+    Route::post('/barang/keluar', [PergerakanBarangController::class, 'storeKeluar'])->name('barang.storeKeluar');
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/export', [LaporanController::class, 'exportPDF'])->name('laporan.export');
     Route::get('/barang', [BarangController::class, 'index'])->name('barang.index');
     Route::get('/barang/{barang}', [BarangController::class, 'show'])->name('barang.show');
 });
