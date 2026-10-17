@@ -5,6 +5,14 @@
         </h2>
     </x-slot>
 
+    @php
+        $oldItems = old('items');
+        if (!is_array($oldItems) || $oldItems === []) {
+            $oldItems = [['barang_id' => '', 'jumlah_masuk' => '']];
+        }
+        $oldItems = array_values($oldItems);
+    @endphp
+
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-sm">
@@ -12,29 +20,79 @@
                     <h4 class="mb-0">Form Barang Masuk</h4>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('barang.storeMasuk') }}" method="POST">
+                    <form action="{{ route('barang.storeMasuk') }}" method="POST"
+                        x-data="{
+                            rows: @js($oldItems).map((row, index) => ({
+                                key: index,
+                                barang_id: row?.barang_id ?? '',
+                                jumlah_masuk: row?.jumlah_masuk ?? '',
+                            })),
+                            fieldErrors: @js($errors->getMessages()),
+                            nextKey: @js(count($oldItems)),
+                            addRow() {
+                                this.rows.push({ key: this.nextKey++, barang_id: '', jumlah_masuk: '' });
+                            },
+                            removeRow(index) {
+                                if (this.rows.length > 1) this.rows.splice(index, 1);
+                            },
+                        }">
                         @csrf
-                        <div class="mb-3">
-                            <label for="barang_id" class="form-label">Pilih Barang</label>
-                            <select class="form-select @error('barang_id') is-invalid @enderror" id="barang_id" name="barang_id" required>
-                                <option value="" disabled selected>-- Pilih Barang untuk Ditambah Stoknya --</option>
-                                @foreach ($barangs as $barang)
-                                    <option value="{{ $barang->id }}" {{ old('barang_id') == $barang->id ? 'selected' : '' }}>
-                                        {{ $barang->nama_barang }} (Stok Saat Ini: {{ $barang->jumlah }})
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('barang_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
 
                         <div class="mb-3">
-                            <label for="jumlah_masuk" class="form-label">Jumlah Masuk</label>
-                            <input type="number" class="form-control @error('jumlah_masuk') is-invalid @enderror" id="jumlah_masuk" name="jumlah_masuk" value="{{ old('jumlah_masuk') }}" required>
-                            @error('jumlah_masuk')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="mb-0">Barang yang Masuk</h5>
+                                <button type="button" class="btn btn-outline-primary btn-sm" @click="addRow()">
+                                    Tambah Barang
+                                </button>
+                            </div>
+
+                            @error('items')
+                                <div class="alert alert-danger py-2" role="alert">{{ $message }}</div>
                             @enderror
+
+                            <template x-for="(item, index) in rows" :key="item.key">
+                                <div class="border rounded p-3 mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h6 class="mb-0" x-text="'Barang ' + (index + 1)"></h6>
+                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                            :disabled="rows.length === 1" @click="removeRow(index)"
+                                            aria-label="Hapus baris barang">
+                                            Hapus
+                                        </button>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label" :for="'items-' + index + '-barang-id'">Pilih Barang</label>
+                                        <select class="form-select"
+                                            :class="fieldErrors['items.' + index + '.barang_id'] ? 'is-invalid' : ''"
+                                            :id="'items-' + index + '-barang-id'"
+                                            :name="'items[' + index + '][barang_id]'" x-model="item.barang_id" required>
+                                            <option value="">-- Pilih Barang untuk Ditambah Stoknya --</option>
+                                            @foreach ($barangs as $barang)
+                                                <option value="{{ $barang->id }}">
+                                                    {{ $barang->nama_barang }} (Stok Saat Ini: {{ $barang->jumlah }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        <template x-if="fieldErrors['items.' + index + '.barang_id']">
+                                            <div class="invalid-feedback d-block"
+                                                x-text="fieldErrors['items.' + index + '.barang_id'][0]"></div>
+                                        </template>
+                                    </div>
+
+                                    <div class="mb-0">
+                                        <label class="form-label" :for="'items-' + index + '-jumlah-masuk'">Jumlah Masuk</label>
+                                        <input type="number" min="1" step="1" class="form-control"
+                                            :class="fieldErrors['items.' + index + '.jumlah_masuk'] ? 'is-invalid' : ''"
+                                            :id="'items-' + index + '-jumlah-masuk'"
+                                            :name="'items[' + index + '][jumlah_masuk]'" x-model="item.jumlah_masuk" required>
+                                        <template x-if="fieldErrors['items.' + index + '.jumlah_masuk']">
+                                            <div class="invalid-feedback d-block"
+                                                x-text="fieldErrors['items.' + index + '.jumlah_masuk'][0]"></div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
 
                         <div class="mb-3">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Barang;
 use App\Models\PergerakanBarang;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class PergerakanBarangController extends Controller
@@ -16,25 +17,38 @@ class PergerakanBarangController extends Controller
 
     public function storeMasuk(Request $request)
     {
-        $request->validate([
-            'barang_id' => 'required|exists:barangs,id',
-            'jumlah_masuk' => 'required|integer|min:1',
+        $validated = $request->validate([
+            'items' => 'required|array|min:1',
+            'items.*.barang_id' => 'required|integer|exists:barangs,id|distinct',
+            'items.*.jumlah_masuk' => 'required|integer|min:1',
             'tanggal' => 'required|date',
             'keterangan' => 'nullable|string',
+        ], [
+            'items.required' => 'Tambahkan setidaknya satu barang.',
+            'items.min' => 'Tambahkan setidaknya satu barang.',
+            'items.*.barang_id.required' => 'Pilih barang untuk baris ini.',
+            'items.*.barang_id.exists' => 'Barang yang dipilih tidak ditemukan.',
+            'items.*.barang_id.distinct' => 'Barang ini sudah dipilih pada baris lain.',
+            'items.*.jumlah_masuk.required' => 'Masukkan jumlah barang untuk baris ini.',
+            'items.*.jumlah_masuk.integer' => 'Jumlah barang harus berupa bilangan bulat.',
+            'items.*.jumlah_masuk.min' => 'Jumlah barang minimal 1.',
         ]);
 
-        $barang = Barang::findOrFail($request->barang_id);
+        DB::transaction(function () use ($validated) {
+            foreach ($validated['items'] as $item) {
+                $barang = Barang::findOrFail($item['barang_id']);
+                $barang->jumlah += $item['jumlah_masuk'];
+                $barang->save();
 
-        $barang->jumlah += $request->jumlah_masuk;
-        $barang->save();
-
-        PergerakanBarang::create([
-            'barang_id' => $request->barang_id,
-            'jumlah' => $request->jumlah_masuk,
-            'tipe' => 'masuk',
-            'tanggal' => $request->tanggal,
-            'keterangan' => $request->keterangan,
-        ]);
+                PergerakanBarang::create([
+                    'barang_id' => $item['barang_id'],
+                    'jumlah' => $item['jumlah_masuk'],
+                    'tipe' => 'masuk',
+                    'tanggal' => $validated['tanggal'],
+                    'keterangan' => $validated['keterangan'] ?? null,
+                ]);
+            }
+        });
 
         return redirect()->route('dashboard')->with('success', 'Berhasil mencatat barang masuk.');
     }
