@@ -34,7 +34,7 @@
 <body class="font-sans text-gray-900 antialiased">
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 auth-bg">
         <div class="auth-overlay"></div>
-        <div class="relative z-10">
+        <div class="relative z-10 w-full px-4 sm:px-0">
             <div class="text-center mb-4">
                 <a href="/" class="text-white text-3xl font-bold flex items-center justify-center">
                     <svg class="w-8 h-8 me-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -45,7 +45,7 @@
                 <p class="text-gray-300 mt-1">Silakan masuk untuk melanjutkan</p>
             </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+            <div class="mx-auto mt-6 w-[min(28rem,calc(100vw-2rem))] px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
                 {{ $slot }}
             </div>
         </div>

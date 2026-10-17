@@ -11,14 +11,22 @@ use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('auth.login');
+        return match ($request->route('loginRole')) {
+            'admin' => view('auth.login-admin'),
+            'karyawan' => view('auth.login-karyawan'),
+            default => view('auth.login'),
+        };
     }
 
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        $role = $request->route('loginRole');
+
+        abort_unless(in_array($role, ['admin', 'karyawan'], true), 404);
+
+        $request->authenticate($role);
 
         $request->session()->regenerate();
 
