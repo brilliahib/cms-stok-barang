@@ -24,6 +24,7 @@ class PergerakanBarangController extends Controller
             'items.*.jumlah_masuk' => 'required|integer|min:1',
             'items.*.harga_masuk' => 'required|integer|min:1|max:99999999',
             'tanggal' => 'required|date',
+            'penerima' => 'required|string|max:255',
             'keterangan' => 'nullable|string',
         ], [
             'items.required' => 'Tambahkan setidaknya satu barang.',
@@ -38,6 +39,8 @@ class PergerakanBarangController extends Controller
             'items.*.harga_masuk.integer' => 'Harga masuk harus berupa bilangan bulat Rupiah.',
             'items.*.harga_masuk.min' => 'Harga masuk minimal Rp 1.',
             'items.*.harga_masuk.max' => 'Harga masuk maksimal Rp 99.999.999.',
+            'penerima.required' => 'Masukkan nama penerima barang.',
+            'penerima.max' => 'Nama penerima maksimal 255 karakter.',
         ]);
 
         DB::transaction(function () use ($validated) {
@@ -52,6 +55,7 @@ class PergerakanBarangController extends Controller
                     'harga_satuan' => $item['harga_masuk'],
                     'tipe' => 'masuk',
                     'tanggal' => $validated['tanggal'],
+                    'penerima' => $validated['penerima'],
                     'keterangan' => $validated['keterangan'] ?? null,
                 ]);
             }

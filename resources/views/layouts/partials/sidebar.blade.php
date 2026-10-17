@@ -46,6 +46,11 @@
                 <i class="bi bi-file-earmark-text-fill me-2"></i> Laporan
             </a>
         </li>
+        <li class="nav-item">
+            <a href="{{ route('laporan.barangMasuk') }}" class="nav-link text-white {{ request()->routeIs('laporan.barangMasuk*') ? 'active' : '' }}">
+                <i class="bi bi-box-arrow-in-down me-2"></i> Laporan Barang Masuk
+            </a>
+        </li>
     </ul>
 
     <hr>

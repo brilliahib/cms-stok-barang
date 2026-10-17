@@ -118,6 +118,14 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="penerima" class="form-label">Penerima</label>
+                            <input type="text" class="form-control @error('penerima') is-invalid @enderror" id="penerima" name="penerima" value="{{ old('penerima') }}" maxlength="255" required>
+                            @error('penerima')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
                             <label for="keterangan" class="form-label">Keterangan (Opsional)</label>
                             <textarea class="form-control" id="keterangan" name="keterangan" rows="3" placeholder="Contoh: Pembelian dari Supplier A">{{ old('keterangan') }}</textarea>
                         </div>

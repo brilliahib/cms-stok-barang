@@ -36,6 +36,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/barang/keluar', [PergerakanBarangController::class, 'storeKeluar'])->name('barang.storeKeluar');
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/export', [LaporanController::class, 'exportPDF'])->name('laporan.export');
+    Route::get('/laporan/barang-masuk', [LaporanController::class, 'barangMasuk'])->name('laporan.barangMasuk');
+    Route::get('/laporan/barang-masuk/export', [LaporanController::class, 'exportBarangMasukPDF'])->name('laporan.barangMasuk.export');
     Route::get('/barang', [BarangController::class, 'index'])->name('barang.index');
     Route::get('/barang/{barang}', [BarangController::class, 'show'])->name('barang.show');
 });

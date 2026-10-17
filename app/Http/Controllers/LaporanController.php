@@ -56,4 +56,43 @@ class LaporanController extends Controller
 
         return $pdf->download('laporan-pergerakan-barang-' . date('Y-m-d') . '.pdf');
     }
+
+    public function barangMasuk(Request $request)
+    {
+        [$pergerakan, $tanggalAwal, $tanggalAkhir] = $this->barangMasukData($request);
+
+        return view('laporan.barang_masuk', compact('pergerakan', 'tanggalAwal', 'tanggalAkhir'));
+    }
+
+    public function exportBarangMasukPDF(Request $request)
+    {
+        [$pergerakan, $tanggalAwal, $tanggalAkhir] = $this->barangMasukData($request);
+
+        $pdf = Pdf::loadView('laporan.barang_masuk_pdf', compact('pergerakan', 'tanggalAwal', 'tanggalAkhir'));
+
+        return $pdf->download('laporan-barang-masuk-' . date('Y-m-d') . '.pdf');
+    }
+
+    private function barangMasukData(Request $request): array
+    {
+        $validated = $request->validate([
+            'tanggal_awal' => ['nullable', 'date'],
+            'tanggal_akhir' => ['nullable', 'date', 'after_or_equal:tanggal_awal'],
+        ], [
+            'tanggal_akhir.after_or_equal' => 'Tanggal akhir harus sama dengan atau setelah tanggal awal.',
+        ]);
+
+        $tanggalAwal = $validated['tanggal_awal'] ?? null;
+        $tanggalAkhir = $validated['tanggal_akhir'] ?? null;
+
+        $pergerakan = PergerakanBarang::with('barang')
+            ->where('tipe', 'masuk')
+            ->when($tanggalAwal, fn ($query) => $query->whereDate('tanggal', '>=', $tanggalAwal))
+            ->when($tanggalAkhir, fn ($query) => $query->whereDate('tanggal', '<=', $tanggalAkhir))
+            ->orderByDesc('tanggal')
+            ->orderByDesc('id')
+            ->get();
+
+        return [$pergerakan, $tanggalAwal, $tanggalAkhir];
+    }
 }
