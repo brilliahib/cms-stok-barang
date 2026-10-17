@@ -40,8 +40,11 @@
                             <input type="number" class="form-control" name="jumlah" value="{{ old('jumlah') }}" required>
                         </div>
                         <div class="mb-3">
-                            <label for="harga" class="form-label">Harga</label>
-                            <input type="number" class="form-control" name="harga" value="{{ old('harga') }}" required>
+                            <label for="harga_masuk" class="form-label">Harga Masuk per Unit (Rp)</label>
+                            <input type="number" min="1" max="99999999" step="1" class="form-control @error('harga_masuk') is-invalid @enderror" id="harga_masuk" name="harga_masuk" value="{{ old('harga_masuk') }}" required>
+                            @error('harga_masuk')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="mb-3">
                             <label for="tanggal_masuk" class="form-label">Tanggal Masuk</label>

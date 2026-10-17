@@ -6,6 +6,7 @@ use App\Models\Barang;
 use App\Models\PergerakanBarang;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class PergerakanBarangController extends Controller
 {
@@ -21,6 +22,7 @@ class PergerakanBarangController extends Controller
             'items' => 'required|array|min:1',
             'items.*.barang_id' => 'required|integer|exists:barangs,id|distinct',
             'items.*.jumlah_masuk' => 'required|integer|min:1',
+            'items.*.harga_masuk' => 'required|integer|min:1|max:99999999',
             'tanggal' => 'required|date',
             'keterangan' => 'nullable|string',
         ], [
@@ -32,17 +34,22 @@ class PergerakanBarangController extends Controller
             'items.*.jumlah_masuk.required' => 'Masukkan jumlah barang untuk baris ini.',
             'items.*.jumlah_masuk.integer' => 'Jumlah barang harus berupa bilangan bulat.',
             'items.*.jumlah_masuk.min' => 'Jumlah barang minimal 1.',
+            'items.*.harga_masuk.required' => 'Masukkan harga masuk untuk baris ini.',
+            'items.*.harga_masuk.integer' => 'Harga masuk harus berupa bilangan bulat Rupiah.',
+            'items.*.harga_masuk.min' => 'Harga masuk minimal Rp 1.',
+            'items.*.harga_masuk.max' => 'Harga masuk maksimal Rp 99.999.999.',
         ]);
 
         DB::transaction(function () use ($validated) {
             foreach ($validated['items'] as $item) {
-                $barang = Barang::findOrFail($item['barang_id']);
+                $barang = Barang::whereKey($item['barang_id'])->lockForUpdate()->firstOrFail();
                 $barang->jumlah += $item['jumlah_masuk'];
                 $barang->save();
 
                 PergerakanBarang::create([
                     'barang_id' => $item['barang_id'],
                     'jumlah' => $item['jumlah_masuk'],
+                    'harga_satuan' => $item['harga_masuk'],
                     'tipe' => 'masuk',
                     'tanggal' => $validated['tanggal'],
                     'keterangan' => $validated['keterangan'] ?? null,
@@ -61,35 +68,35 @@ class PergerakanBarangController extends Controller
 
     public function storeKeluar(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'barang_id' => 'required|exists:barangs,id',
-            'jumlah_keluar' => [
-                'required',
-                'integer',
-                'min:1',
-                function ($attribute, $value, $fail) use ($request) {
-                    $barang = Barang::find($request->barang_id);
-                    if ($barang && $value > $barang->jumlah) {
-                        $fail("Jumlah keluar melebihi stok yang ada ({$barang->jumlah}).");
-                    }
-                },
-            ],
+            'jumlah_keluar' => 'required|integer|min:1',
+            'harga_keluar' => 'required|integer|min:1|max:99999999',
             'tanggal' => 'required|date',
             'keterangan' => 'nullable|string',
         ]);
 
-        $barang = Barang::findOrFail($request->barang_id);
+        DB::transaction(function () use ($validated) {
+            $barang = Barang::whereKey($validated['barang_id'])->lockForUpdate()->firstOrFail();
 
-        $barang->jumlah -= $request->jumlah_keluar;
-        $barang->save();
+            if ($validated['jumlah_keluar'] > $barang->jumlah) {
+                throw ValidationException::withMessages([
+                    'jumlah_keluar' => "Jumlah keluar melebihi stok yang ada ({$barang->jumlah}).",
+                ]);
+            }
 
-        PergerakanBarang::create([
-            'barang_id' => $request->barang_id,
-            'jumlah' => $request->jumlah_keluar,
-            'tipe' => 'keluar',
-            'tanggal' => $request->tanggal,
-            'keterangan' => $request->keterangan,
-        ]);
+            $barang->jumlah -= $validated['jumlah_keluar'];
+            $barang->save();
+
+            PergerakanBarang::create([
+                'barang_id' => $barang->id,
+                'jumlah' => $validated['jumlah_keluar'],
+                'harga_satuan' => $validated['harga_keluar'],
+                'tipe' => 'keluar',
+                'tanggal' => $validated['tanggal'],
+                'keterangan' => $validated['keterangan'] ?? null,
+            ]);
+        });
 
         return redirect()->route('dashboard')->with('success', 'Berhasil mencatat barang keluar.');
     }

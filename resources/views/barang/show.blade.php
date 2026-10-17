@@ -23,9 +23,6 @@
                         <dt class="col-sm-4">Stok Saat Ini</dt>
                         <dd class="col-sm-8"><span class="badge bg-primary fs-6">{{ $barang->jumlah }}</span></dd>
 
-                        <dt class="col-sm-4">Harga</dt>
-                        <dd class="col-sm-8">Rp {{ number_format($barang->harga, 0, ',', '.') }}</dd>
-
                         <dt class="col-sm-4">Tgl. Dibuat</dt>
                         <dd class="col-sm-8">{{ $barang->tanggal_masuk ? \Carbon\Carbon::parse($barang->tanggal_masuk)->format('d M Y') : 'N/A' }}</dd>
                     </dl>
@@ -45,6 +42,7 @@
                                     <th>Tanggal</th>
                                     <th>Tipe</th>
                                     <th>Jumlah</th>
+                                    <th>Harga per Unit</th>
                                     <th>Keterangan</th>
                                 </tr>
                             </thead>
@@ -60,11 +58,12 @@
                                         @endif
                                     </td>
                                     <td>{{ $item->jumlah }}</td>
+                                    <td>{{ $item->harga_satuan !== null ? 'Rp ' . number_format($item->harga_satuan, 0, ',', '.') : 'Belum tersedia' }}</td>
                                     <td>{{ $item->keterangan }}</td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="4" class="text-center">Belum ada riwayat pergerakan.</td>
+                                    <td colspan="5" class="text-center">Belum ada riwayat pergerakan.</td>
                                 </tr>
                                 @endforelse
                             </tbody>

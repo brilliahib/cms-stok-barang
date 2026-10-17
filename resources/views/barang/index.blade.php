@@ -33,7 +33,6 @@
                             <th>Kategori</th>
                             <th>Supplier</th>
                             <th>Jumlah</th>
-                            <th>Harga (Rp)</th>
                             @if(auth()->user()->role == 'admin')
                             <th class="text-center">Aksi</th>
                             @endif
@@ -49,7 +48,6 @@
                             <td>{{ $barang->kategori->nama_kategori ?? 'N/A' }}</td>
                             <td>{{ $barang->supplier->nama_supplier ?? 'N/A' }}</td>
                             <td>{{ $barang->jumlah }}</td>
-                            <td>Rp {{ number_format($barang->harga, 0, ',', '.') }}</td>
                             @if(auth()->user()->role == 'admin')
                             <td class="text-center">
                                 <form onsubmit="return confirm('Apakah Anda Yakin ?');" action="{{ route('barang.destroy', $barang->id) }}" method="POST">
@@ -63,7 +61,7 @@
                         </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center">
+                                <td colspan="{{ auth()->user()->role == 'admin' ? 6 : 5 }}" class="text-center">
                                     <div class="alert alert-warning mb-0">
                                         Data barang tidak ditemukan.
                                     </div>

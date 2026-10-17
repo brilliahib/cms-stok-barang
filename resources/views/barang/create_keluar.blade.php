@@ -31,8 +31,16 @@
 
                         <div class="mb-3">
                             <label for="jumlah_keluar" class="form-label">Jumlah Keluar</label>
-                            <input type="number" class="form-control @error('jumlah_keluar') is-invalid @enderror" id="jumlah_keluar" name="jumlah_keluar" value="{{ old('jumlah_keluar') }}" required>
+                            <input type="number" min="1" step="1" class="form-control @error('jumlah_keluar') is-invalid @enderror" id="jumlah_keluar" name="jumlah_keluar" value="{{ old('jumlah_keluar') }}" required>
                             @error('jumlah_keluar')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="harga_keluar" class="form-label">Harga Keluar per Unit (Rp)</label>
+                            <input type="number" min="1" max="99999999" step="1" class="form-control @error('harga_keluar') is-invalid @enderror" id="harga_keluar" name="harga_keluar" value="{{ old('harga_keluar') }}" required>
+                            @error('harga_keluar')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>

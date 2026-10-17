@@ -8,7 +8,7 @@
     @php
         $oldItems = old('items');
         if (!is_array($oldItems) || $oldItems === []) {
-            $oldItems = [['barang_id' => '', 'jumlah_masuk' => '']];
+            $oldItems = [['barang_id' => '', 'jumlah_masuk' => '', 'harga_masuk' => '']];
         }
         $oldItems = array_values($oldItems);
     @endphp
@@ -26,11 +26,12 @@
                                 key: index,
                                 barang_id: row?.barang_id ?? '',
                                 jumlah_masuk: row?.jumlah_masuk ?? '',
+                                harga_masuk: row?.harga_masuk ?? '',
                             })),
                             fieldErrors: @js($errors->getMessages()),
                             nextKey: @js(count($oldItems)),
                             addRow() {
-                                this.rows.push({ key: this.nextKey++, barang_id: '', jumlah_masuk: '' });
+                                this.rows.push({ key: this.nextKey++, barang_id: '', jumlah_masuk: '', harga_masuk: '' });
                             },
                             removeRow(index) {
                                 if (this.rows.length > 1) this.rows.splice(index, 1);
@@ -89,6 +90,18 @@
                                         <template x-if="fieldErrors['items.' + index + '.jumlah_masuk']">
                                             <div class="invalid-feedback d-block"
                                                 x-text="fieldErrors['items.' + index + '.jumlah_masuk'][0]"></div>
+                                        </template>
+                                    </div>
+
+                                    <div class="mt-3">
+                                        <label class="form-label" :for="'items-' + index + '-harga-masuk'">Harga Masuk per Unit (Rp)</label>
+                                        <input type="number" min="1" max="99999999" step="1" class="form-control"
+                                            :class="fieldErrors['items.' + index + '.harga_masuk'] ? 'is-invalid' : ''"
+                                            :id="'items-' + index + '-harga-masuk'"
+                                            :name="'items[' + index + '][harga_masuk]'" x-model="item.harga_masuk" required>
+                                        <template x-if="fieldErrors['items.' + index + '.harga_masuk']">
+                                            <div class="invalid-feedback d-block"
+                                                x-text="fieldErrors['items.' + index + '.harga_masuk'][0]"></div>
                                         </template>
                                     </div>
                                 </div>

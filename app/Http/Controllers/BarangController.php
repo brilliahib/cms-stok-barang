@@ -7,6 +7,7 @@ use App\Models\Kategori;
 use App\Models\Supplier;
 use App\Models\PergerakanBarang;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BarangController extends Controller
 {
@@ -33,24 +34,33 @@ class BarangController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama_barang' => 'required|string|max:255',
             'jumlah' => 'required|integer|min:1',
-            'harga' => 'required|numeric',
+            'harga_masuk' => 'required|integer|min:1|max:99999999',
             'tanggal_masuk' => 'required|date',
             'kategori_id' => 'nullable|exists:kategoris,id',
             'supplier_id' => 'nullable|exists:suppliers,id',
         ]);
 
-        $barang = Barang::create($request->all());
+        DB::transaction(function () use ($validated) {
+            $barang = Barang::create([
+                'nama_barang' => $validated['nama_barang'],
+                'jumlah' => $validated['jumlah'],
+                'tanggal_masuk' => $validated['tanggal_masuk'],
+                'kategori_id' => $validated['kategori_id'] ?? null,
+                'supplier_id' => $validated['supplier_id'] ?? null,
+            ]);
 
-        PergerakanBarang::create([
-            'barang_id' => $barang->id,
-            'jumlah' => $request->jumlah,
-            'tipe' => 'masuk',
-            'tanggal' => $request->tanggal_masuk,
-            'keterangan' => 'Stok awal'
-        ]);
+            PergerakanBarang::create([
+                'barang_id' => $barang->id,
+                'jumlah' => $validated['jumlah'],
+                'harga_satuan' => $validated['harga_masuk'],
+                'tipe' => 'masuk',
+                'tanggal' => $validated['tanggal_masuk'],
+                'keterangan' => 'Stok awal',
+            ]);
+        });
 
         return redirect()->route('barang.index')
             ->with('success', 'Barang berhasil ditambahkan.');
@@ -74,16 +84,15 @@ class BarangController extends Controller
 
     public function update(Request $request, Barang $barang)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama_barang' => 'required|string|max:255',
             'jumlah' => 'required|integer',
-            'harga' => 'required|numeric',
             'tanggal_masuk' => 'required|date',
             'kategori_id' => 'nullable|exists:kategoris,id',
             'supplier_id' => 'nullable|exists:suppliers,id',
         ]);
 
-        $barang->update($request->all());
+        $barang->update($validated);
 
         return redirect()->route('barang.index')
             ->with('success', 'Data barang berhasil diupdate.');

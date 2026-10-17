@@ -19,7 +19,7 @@ public function up(): void
     });
 }
 // app/Models/PergerakanBarang.php
-protected $fillable = ['barang_id', 'jumlah', 'tipe', 'keterangan', 'tanggal']; // <-- Tambahkan 'tanggal'
+protected $fillable = ['barang_id', 'jumlah', 'harga_satuan', 'tipe', 'keterangan', 'tanggal']; // <-- Tambahkan 'tanggal'
 
 public function barang()
 {

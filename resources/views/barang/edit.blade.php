@@ -41,10 +41,6 @@
                             <input type="number" class="form-control" name="jumlah" value="{{ old('jumlah', $barang->jumlah) }}" required>
                         </div>
                         <div class="mb-3">
-                            <label for="harga" class="form-label">Harga</label>
-                            <input type="number" class="form-control" name="harga" value="{{ old('harga', $barang->harga) }}" required>
-                        </div>
-                        <div class="mb-3">
                             <label for="tanggal_masuk" class="form-label">Tanggal Masuk</label>
                             <input type="date" class="form-control" name="tanggal_masuk" value="{{ old('tanggal_masuk', $barang->tanggal_masuk) }}" required>
                         </div>
