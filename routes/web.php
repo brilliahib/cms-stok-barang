@@ -5,6 +5,7 @@ use App\Http\Controllers\BarangController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\KasirController;
 use App\Http\Controllers\PergerakanBarangController;
 use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +22,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::middleware('admin')->group(function () {
+        Route::get('/kasir', [KasirController::class, 'index'])->name('kasir.index');
+        Route::post('/kasir/checkout', [KasirController::class, 'checkout'])->name('kasir.checkout');
+        Route::get('/kasir/transaksi', [KasirController::class, 'history'])->name('kasir.history');
+        Route::get('/kasir/transaksi/export.pdf', [KasirController::class, 'exportHistoryPdf'])->name('kasir.transaksi.export');
+        Route::get('/kasir/transaksi/{transaksi}/nota.pdf', [KasirController::class, 'receiptPdf'])->whereNumber('transaksi')->name('kasir.transaksi.nota');
+        Route::get('/kasir/transaksi/{transaksi}', [KasirController::class, 'show'])->whereNumber('transaksi')->name('kasir.transaksi.show');
+
         Route::get('/barang/create', [BarangController::class, 'create'])->name('barang.create');
         Route::post('/barang', [BarangController::class, 'store'])->name('barang.store');
         Route::get('/barang/{barang}/edit', [BarangController::class, 'edit'])->name('barang.edit');

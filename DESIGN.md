@@ -89,3 +89,45 @@ Do not create another shared component for the two forms unless implementation r
 | Item | Location | Why accepted | Owner / Exit |
 |---|---|---|---|
 | Guest background is loaded from an external Unsplash URL | `resources/views/layouts/guest.blade.php` | Existing sign-in visual; replacing its asset is outside this feature | Revisit with a separately scoped asset/performance change |
+
+## 9. Admin Application Surface
+
+The authenticated inventory pages use the shared Blade app layout and Bootstrap 5.3.3. New admin pages, including Kasir, follow these existing primitives instead of creating a second design language.
+
+### Tokens
+
+| Role | Existing token or value | Usage |
+|---|---|---|
+| Page background | Existing `#f4f7f6` from `resources/views/layouts/app.blade.php` | Admin content canvas |
+| Main surface | Bootstrap `bg-white` | Page header and cards |
+| Primary text | Bootstrap `text-body` / default body color | Labels and content |
+| Secondary text | Bootstrap `text-secondary` | Supporting copy and metadata |
+| Borders | Bootstrap default component borders | Inputs, tables, and card edges |
+| Primary action | Bootstrap `btn-primary` | Main actions |
+| Success action | Bootstrap `btn-success` | Checkout and export completion actions |
+| Destructive action | Bootstrap `btn-outline-danger` or `btn-danger` | Remove a cart line |
+| Error state | Bootstrap `is-invalid`, `invalid-feedback`, `alert-danger` | Field and request errors |
+| Success state | Bootstrap `alert-success` | Completed transaction feedback |
+| Print ink | `#212529` | Standalone receipt and history PDFs |
+| Print separator | `#dee2e6` | Standalone PDF table rules |
+
+Use Bootstrap classes and existing layout styles. Do not add raw colors, arbitrary font sizes, or one-off shadows to feature views.
+
+### Admin primitives and states
+
+- **Application shell**: `x-app-layout`, fixed-width dark sidebar, flexible content, rounded white header. The shared layout owns the page background and Bootstrap assets.
+- **Card**: Bootstrap `.card`, `.card-header.bg-white`, `.card-body`, and existing `shadow-sm` treatment for grouped page content.
+- **Form field**: `.form-label`, `.form-control` or `.form-select`, `.is-invalid`, adjacent `.invalid-feedback`, and visible labels tied to input IDs.
+- **Action**: semantic `<button>` for state changes and `<a>` for navigation, using Bootstrap button variants and visible keyboard focus.
+- **Responsive table**: `.table-responsive` around `.table`; on narrow screens allow horizontal table scrolling rather than shrinking text or hiding required data.
+- **Status message**: `.alert` with success or danger variant; pair it with field-level feedback where an input caused the error.
+- **Cashier catalog result**: a white Bootstrap card with product name, current stock, and a clearly labeled add button. Disabled when stock is zero.
+- **Cashier cart line**: labeled quantity and unit-price controls, line amount, and a semantic remove button. Custom lines include a required description.
+- **Cashier total panel**: card grouping subtotal, cash received, change, and the primary checkout button; stack below the cart on narrow screens.
+
+### Admin interaction and responsive behavior
+
+- Keep existing Bootstrap focus indicators and native form validation behavior; provide explicit `aria-live="polite"` for changing totals and cart status.
+- Product search remains a labeled GET form. Adding/removing cart lines and recalculating totals must work by keyboard as well as pointer.
+- Use Bootstrap grid breakpoints so catalog and cart are side-by-side on wide screens and stack on narrow screens. Preserve all product, quantity, price, and payment controls at every width.
+- Do not introduce decorative motion. State changes use immediate text and Bootstrap's existing hover/focus feedback.

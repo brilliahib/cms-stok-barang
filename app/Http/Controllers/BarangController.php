@@ -8,6 +8,7 @@ use App\Models\Supplier;
 use App\Models\PergerakanBarang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class BarangController extends Controller
 {
@@ -86,13 +87,25 @@ class BarangController extends Controller
     {
         $validated = $request->validate([
             'nama_barang' => 'required|string|max:255',
-            'jumlah' => 'required|integer',
+            'jumlah' => 'required|integer|min:0',
+            'expected_jumlah' => 'required|integer|min:0',
             'tanggal_masuk' => 'required|date',
             'kategori_id' => 'nullable|exists:kategoris,id',
             'supplier_id' => 'nullable|exists:suppliers,id',
         ]);
 
-        $barang->update($validated);
+        DB::transaction(function () use ($barang, $validated) {
+            $lockedBarang = Barang::whereKey($barang->id)->lockForUpdate()->firstOrFail();
+
+            if ((int) $lockedBarang->jumlah !== (int) $validated['expected_jumlah']) {
+                throw ValidationException::withMessages([
+                    'jumlah' => 'Stok berubah sejak halaman ini dibuka. Muat ulang data barang sebelum menyimpan.',
+                ]);
+            }
+
+            unset($validated['expected_jumlah']);
+            $lockedBarang->update($validated);
+        });
 
         return redirect()->route('barang.index')
             ->with('success', 'Data barang berhasil diupdate.');

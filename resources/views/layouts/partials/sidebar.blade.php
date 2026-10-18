@@ -29,6 +29,11 @@
 
         @if(auth()->user()->role == 'admin')
         <li class="nav-item">
+            <a href="{{ route('kasir.index') }}" class="nav-link text-white {{ request()->routeIs('kasir.*') ? 'active' : '' }}">
+                <i class="bi bi-receipt me-2"></i> Kasir
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="{{ route('kategori.index') }}" class="nav-link text-white {{ request()->routeIs('kategori.index') ? 'active' : '' }}">
                 <i class="bi bi-tags-fill me-2"></i> Kategori
             </a>

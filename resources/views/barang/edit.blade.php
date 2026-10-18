@@ -10,6 +10,7 @@
                     <form action="{{ route('barang.update', $barang->id) }}" method="POST">
                         @csrf
                         @method('PUT')
+                        <input type="hidden" name="expected_jumlah" value="{{ old('expected_jumlah', $barang->jumlah) }}">
                         <div class="mb-3">
                             <label for="nama_barang" class="form-label">Nama Barang</label>
                             <input type="text" class="form-control" name="nama_barang" value="{{ old('nama_barang', $barang->nama_barang) }}" required>
@@ -38,7 +39,10 @@
 
                         <div class="mb-3">
                             <label for="jumlah" class="form-label">Jumlah</label>
-                            <input type="number" class="form-control" name="jumlah" value="{{ old('jumlah', $barang->jumlah) }}" required>
+                            <input type="number" min="0" class="form-control @error('jumlah') is-invalid @enderror" name="jumlah" value="{{ old('jumlah', $barang->jumlah) }}" required>
+                            @error('jumlah')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="mb-3">
                             <label for="tanggal_masuk" class="form-label">Tanggal Masuk</label>
